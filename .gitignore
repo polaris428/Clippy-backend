@@ -1,4 +1,6 @@
 node_modules
-# Keep environment variables out of version control
 .env
 dist/
+firebase-service-account.json
+src/test_folder
+prisma/migrations
