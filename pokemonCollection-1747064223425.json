@@ -1,0 +1,42 @@
+[
+  {
+    "color": "default",
+    "type": "ditto",
+    "size": "nano",
+    "name": "메타몽",
+    "generation": "gen1",
+    "originalSpriteSize": 32
+  },
+  {
+    "color": "default",
+    "type": "pikachu",
+    "size": "nano",
+    "name": "피카츄",
+    "generation": "gen1",
+    "originalSpriteSize": 32
+  },
+  {
+    "color": "default",
+    "type": "charizard",
+    "size": "nano",
+    "name": "리자몽",
+    "generation": "gen1",
+    "originalSpriteSize": 32
+  },
+  {
+    "color": "default",
+    "type": "eevee",
+    "size": "nano",
+    "name": "이브이",
+    "generation": "gen1",
+    "originalSpriteSize": 32
+  },
+  {
+    "color": "default",
+    "type": "mew",
+    "size": "nano",
+    "name": "뮤",
+    "generation": "gen1",
+    "originalSpriteSize": 32
+  }
+]
