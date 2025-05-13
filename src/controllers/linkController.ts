@@ -70,3 +70,67 @@ export const createLink = async (req: AuthRequest, res: Response): Promise<void>
     res.status(500).json({ error: 'Server error' });
   }
 };
+
+export const getLinks = async (req: AuthRequest, res: Response) => {
+  const folderId = req.query.folderId as string;
+
+  if (!req.uid) {
+    res.status(401).json({ error: 'Unauthorized' });
+    return;
+  }
+
+  if (!folderId) {
+    res.status(400).json({ error: 'folderId query parameter is required' });
+    return;
+  }
+
+  try {
+    const user = await prisma.user.findUnique({ where: { firebaseUid: req.uid } });
+    if (!user) {
+      res.status(404).json({ error: 'User not found' });
+      return;
+    }
+
+    // 접근 권한 확인 (소유자 or 공유받은 사용자)
+    const folder = await prisma.folder.findFirst({
+      where: {
+        id: folderId,
+        OR: [
+          { ownerId: user.id },
+          { shares: { some: { userId: user.id } } }
+        ]
+      }
+    });
+
+    if (!folder) {
+      res.status(403).json({ error: 'You do not have access to this folder' });
+      return;
+    }
+
+    const links = await prisma.link.findMany({
+      where: { folderId },
+      include: {
+        linkTags: {
+          include: {
+            tag: true
+          }
+        }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+
+    const result = links.map(link => ({
+      id: link.id,
+      title: link.title,
+      url: link.url,
+      createdAt: link.createdAt,
+      tags: link.linkTags.map(lt => lt.tag.name)
+    }));
+
+    res.json(result);
+
+  } catch (err) {
+    console.error('❌ 링크 조회 에러:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
