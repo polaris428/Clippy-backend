@@ -34,6 +34,7 @@ export const createFolder = async (req: AuthRequest, res: Response) => {
 
 
 export const getFolders = async (req: AuthRequest, res: Response) => {
+  console.log('✅ UID:', req.uid);
   if (!req.uid) {
     res.status(401).json({ error: 'Unauthorized' });
     return;
@@ -44,6 +45,7 @@ export const getFolders = async (req: AuthRequest, res: Response) => {
       where: { firebaseUid: req.uid },
     });
     if (!user) {
+      console.log('✅ 404UID:', req.uid);
       res.status(404).json({ error: 'User not found' });
       return;
     }
