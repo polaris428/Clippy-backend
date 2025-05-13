@@ -1,49 +1,66 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+// schema.prisma
 
 generator client {
   provider = "prisma-client-js"
-
 }
-
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
 model User {
-  id        Int      @id @default(autoincrement())
-  firebaseUid String   @unique
-  email     String   
-  links     Link[]
-  createdAt DateTime @default(now())
+  id             Int       @id @default(autoincrement())
+  firebaseUid    String    @unique
+  email          String
+  folders        Folder[]  @relation("OwnerFolders")
+  sharedFolders  UserFolderShare[] // 폴더 공유받은 목록
+  createdAt      DateTime  @default(now())
+}
+
+model Folder {
+  id         Int       @id @default(autoincrement())
+  name       String
+  ownerId    Int
+  owner      User      @relation("OwnerFolders", fields: [ownerId], references: [id])
+  links      Link[]
+  shares     UserFolderShare[]
+  createdAt  DateTime  @default(now())
+}
+
+model UserFolderShare {
+  id       Int    @id @default(autoincrement())
+  userId   Int
+  folderId Int
+
+  user     User   @relation(fields: [userId], references: [id])
+  folder   Folder @relation(fields: [folderId], references: [id])
+
+  @@unique([userId, folderId])
 }
 
 model Link {
-  id        Int       @id @default(autoincrement())
-  title     String
-  url       String
-  user      User      @relation(fields: [userId], references: [id])
-  userId    Int
-  createdAt DateTime  @default(now())
-  linkTags  LinkTag[] // ← 중간 테이블 사용
+  id         Int       @id @default(autoincrement())
+  title      String
+  url        String
+  folderId   Int
+  folder     Folder    @relation(fields: [folderId], references: [id])
+  linkTags   LinkTag[]
+  createdAt  DateTime  @default(now())
 }
 
 model Tag {
   id        Int       @id @default(autoincrement())
   name      String    @unique
-  linkTags  LinkTag[] // ← 중간 테이블 사용
+  linkTags  LinkTag[]
 }
 
 model LinkTag {
-  id      Int   @id @default(autoincrement())
-  link    Link  @relation(fields: [linkId], references: [id])
-  linkId  Int
-  tag     Tag   @relation(fields: [tagId], references: [id])
-  tagId   Int
+  id       Int    @id @default(autoincrement())
+  linkId   Int
+  tagId    Int
+  link     Link   @relation(fields: [linkId], references: [id])
+  tag      Tag    @relation(fields: [tagId], references: [id])
 
-  @@unique([linkId, tagId]) // 중복 방지
+  @@unique([linkId, tagId])
 }
