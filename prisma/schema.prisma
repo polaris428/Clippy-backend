@@ -10,7 +10,7 @@ datasource db {
 }
 
 model User {
-  id             Int       @id @default(autoincrement())
+  id             String    @id @default(cuid())
   firebaseUid    String    @unique
   email          String
   folders        Folder[]  @relation("OwnerFolders")
@@ -19,9 +19,9 @@ model User {
 }
 
 model Folder {
-  id         Int       @id @default(autoincrement())
+  id         String    @id @default(cuid())
   name       String
-  ownerId    Int
+  ownerId    String
   owner      User      @relation("OwnerFolders", fields: [ownerId], references: [id])
   links      Link[]
   shares     UserFolderShare[]
@@ -29,9 +29,9 @@ model Folder {
 }
 
 model UserFolderShare {
-  id       Int    @id @default(autoincrement())
-  userId   Int
-  folderId Int
+  id       String    @id @default(cuid())
+  userId   String
+  folderId String
 
   user     User   @relation(fields: [userId], references: [id])
   folder   Folder @relation(fields: [folderId], references: [id])
@@ -40,25 +40,25 @@ model UserFolderShare {
 }
 
 model Link {
-  id         Int       @id @default(autoincrement())
+  id         String    @id @default(cuid())
   title      String
   url        String
-  folderId   Int
+  folderId   String
   folder     Folder    @relation(fields: [folderId], references: [id])
   linkTags   LinkTag[]
   createdAt  DateTime  @default(now())
 }
 
 model Tag {
-  id        Int       @id @default(autoincrement())
+  id        String       @id @default(cuid())
   name      String    @unique
   linkTags  LinkTag[]
 }
 
 model LinkTag {
-  id       Int    @id @default(autoincrement())
-  linkId   Int
-  tagId    Int
+  id       String    @id @default(cuid())
+  linkId   String
+  tagId    String
   link     Link   @relation(fields: [linkId], references: [id])
   tag      Tag    @relation(fields: [tagId], references: [id])
 
